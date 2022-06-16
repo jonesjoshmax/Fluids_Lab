@@ -36,8 +36,6 @@ def press_coeff():
         for s in range(18):
             ps = unpack[2][z1]
             pd = unpack[1][z1]
-            print(ps)
-            print(pd)
             pc = ps / pd
             mirror[zindex, z0] = pc
             z0 = z0 + 1
@@ -102,6 +100,8 @@ def summations():
         ang = np.deg2rad(r)
         cl = (cn * np.cos(ang)) - (cc * np.sin(ang))
         cd = (cc * np.cos(ang)) + (cn * np.sin(ang))
+        if cd < 0:
+            cd = -1 * cd
         mirror_a[0][z0] = cl
         mirror_a[1][z0] = cd
         z0 = z0 + 1
@@ -110,17 +110,26 @@ def summations():
 
 def plot():
     summations()
+    plt.figure(dpi=100)
     plt.plot(mirror_a[1], mirror_a[0], color='black', marker='o')
     plt.grid()
     plt.title('Lift Coefficient vs Drag Coefficient')
+    plt.xlabel('Drag Coefficient')
+    plt.ylabel('Lift Coefficient')
     plt.show()
+    plt.figure(dpi=100)
     plt.plot(angles, mirror_a[0], color='blue', marker='^')
     plt.grid()
     plt.title('Lift Coefficient vs Angle')
+    plt.xlabel('Angle of Attack (Degrees)')
+    plt.ylabel('Lift Coefficient')
     plt.show()
+    plt.figure(dpi=100)
     plt.plot(angles, mirror_a[1], color='red', marker='s')
     plt.grid()
     plt.title('Drag Coefficient vs Angle')
+    plt.xlabel('Angle of Attack (Degrees)')
+    plt.ylabel('Drag Coefficient')
     plt.show()
 
 

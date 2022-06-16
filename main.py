@@ -30,15 +30,47 @@ xco1 = np.array(
      1.790, 2.106, 2.422, 2.738, 3.054, 3.370,
      3.686, 4.002, 4.318, 4.634, 4.950, 5.265]
 )
+xpco = np.array(
+    [0, .035, .088, .14, .193, .246,
+     .298, .351, .404, .456, .509, .562,
+     .614, .667, .72, .772, .825, .878,
+     1]
+)
 xpco1 = np.array(
     [0, .035, .088, .14, .193, .246,
      .298, .351, .404, .456, .509, .562,
      .614, .667, .72, .772, .825, .878]
 )
+xpco2 = np.array(
+    [.035, .088, .14, .193, .246, .298,
+     .351, .404, .456, .509, .562, .614,
+     .667, .72, .772, .825, .878, 1]
+)
+xpco3 = np.array(
+    [0, .035, .088, .14, .193, .246,
+     .298, .351, .404, .456, .509, .562,
+     .614, .667, .72, .772, .825, .878,
+     .825, .772, .72,  .667, .614, .562,
+     .509, .456, .404, .351, .298, .246,
+     .193, .14,  .088, .035, 0, 0]
+)
 ypco1 = np.array(
     [0, .0305, .0446, .0524, .057, .0593,
      .06, .0595, .0579, .0555, .0524, .0487,
      .0444, .0398, .0347, .0292, .0234, .0172]
+)
+ypco3 = np.array(
+    [0, .0305, .0446, .0524, .057, .0593,
+     .06, .0595, .0579, .0555, .0524, .0487,
+     .0444, .0398, .0347, .0292, .0234, .0172,
+     -.0234, -.0292, -.0347, -.0398, -.0444, -.0487,
+     -.0524, -.0555, -.0579, -.0595, -.06, -.0593,
+     -.057,  -.0524, -.0446, -.0305, 0, 0]
+)
+ypco2 = np.array(
+    [.0305, .0446, .0524, .057, .0593, .06,
+     .0595, .0579, .0555, .0524, .0487, .0444,
+     .0398, .0347, .0292, .0234, .0172, 0]
 )
 xco2 = np.array(
     [.210, .526, .842, 1.158, 1.474, 1.790,
@@ -71,17 +103,9 @@ wing1 = 6 * (.12 / .20) * ((.2969 * ((xco / 6) ** .5)) - (.126 * (xco / 6)) - (.
                            .2843 * ((xco / 6) ** 3) - (.1015 * ((xco / 6) ** 4)))
 wing2 = -6 * (.12 / .20) * ((.2969 * ((xco / 6) ** .5)) - (.126 * (xco / 6)) - (.3516 * ((xco / 6) ** 2)) +
                             .2843 * ((xco / 6) ** 3) - (.1015 * ((xco / 6) ** 4)))
+wingpco = (.12 / .20) * ((.2969 * (xpco ** .5)) - (.126 * xpco) - (.3516 * (xpco ** 2)) + (.2843 * (xpco ** 3)) - (.1015 * (xpco ** 4)))
 angle_set = np.array(
     [0, 4, 6, 8, 10, 12, 14]
-)
-# c_lift and c_drag values obtained from running code at each angle for lift_drag function
-c_lift = np.array(
-    [0, .3044327340611734, .4365899377696894, .5362302629293315, .6181059509083588,
-     .4830249282582468, .3994767204713644]
-)
-c_drag = np.array(
-    [.022336053395482534, .04682529789555182, .05383348054953365, .153110403160639, .2148709903356658,
-     .06839269385571911, .034624663996392614]
 )
 
 
@@ -215,13 +239,15 @@ def plot1():
     title = angle_input.title
     title = repr(title)
     get_components(lst1, lst2)
-    plt.plot(xco, wing1, color='black')
-    plt.plot(xco, wing2, color='black')
-    plt.quiver(xco1, yco1, cnx1, cny1, angles='xy', scale_units='xy', scale=1, color='red')
-    plt.quiver(xco2, -1 * yco2, cnx2, cny2, angles='xy', scale_units='xy', scale=1, color='blue')
+    plt.rcParams.update({'font.size': 26})
+    plt.figure(dpi=200)
+    plt.plot(xpco, wingpco, color='black')
+    plt.plot(xpco, -wingpco, color='black')
+    plt.quiver(xpco1, ypco1, cnx1, cny1, angles='xy', scale_units='xy', scale=1, color='blue')
+    plt.quiver(xpco2, -1 * ypco2, cnx2, cny2, angles='xy', scale_units='xy', scale=1, color='red')
     plt.grid()
-    plt.xlim(-1.5, 6.5)
-    plt.ylim(-2, 2)
+    plt.xlim(-1.15, 1.05)
+    plt.ylim(-.125, 3)
     plt.title(title + ' Degree AOA Normal Pressure Coefficients')
     plt.show()
 
@@ -233,7 +259,7 @@ def plot2():
     title = repr(title)
     get_components(lst1, lst2)
     plt.plot(xco, wing1, color='black')
-    plt.plot(xco, wing2, color='black')
+    plt.plot(-1 * xco, wing2, color='black')
     plt.quiver(xco1, yco1, cnx1, zco, angles='xy', scale_units='xy', scale=1, color='red')
     plt.quiver(xco2, -1 * yco2, cnx2, zco, angles='xy', scale_units='xy', scale=1, color='blue')
     plt.grid()
@@ -261,71 +287,50 @@ def plot3():
 
 
 def plot4():
-    plt.plot(c_lift, c_drag, color='red', marker='o')
-    plt.grid()
-    plt.title('Lift Coeff vs Drag Coeff')
-    plt.show()
-    plt.plot(angle_set, c_lift, color='red', marker='o')
-    plt.grid()
-    plt.title('Lift Coeff vs Angle')
-    plt.show()
-    plt.plot(angle_set, c_drag, color='red', marker='o')
-    plt.grid()
-    plt.title('Drag Coeff vs Angle')
-    plt.show()
-
-
-def lift_drag():  # This is the lift/drag integration
-    lst1 = angle_input.lst1  # input data pulled from input script
+    coeffs = np.empty(36)
+    lst1 = angle_input.lst1
     lst2 = angle_input.lst2
-    angle = angle_input.title
-    coeff1(lst1)  # calling for the pressure coefficients (returns array with Cp values)
-    cpu = cn1  # set it so I can use coeff1 later again without wiping array
-    integral = np.empty(17)  # used for loop, could have used number, but just habit.
-    z = 0  # z is counter for indexing arrays in loop
-    a = 0  # a will be calculation variable. could have used cnu and cut a line, but
-    for r in integral:  # I just use a for operations in loops
-        dx = xpco1[z + 1] - xpco1[z]  # getting difference in x location for integration calcs
-        p = cpu[z + 1] + cpu[z]  # adding Cp's for the given equations (10-15)
-        a = (.5 * p * dx) + a  # operations
-        z = z + 1  # loop counting
-    cnu = a
-    z = 0  # reset for next loop
-    a = 0
-    for r in integral:  # these 4 for loops get cnu cnl ccu and ccl then turn to cn and cc
-        dy = ypco1[z + 1] - ypco1[z]
-        p = cpu[z + 1] + cpu[z]
-        a = (.5 * p * dy) + a
-        z = z + 1
-    ccu = a
-    coeff1(lst2)
-    cpl = cn1
+    title = angle_input.title
+    title = repr(title)
+    coeff1(lst1)
+    coeff2(lst2)
     z = 0
-    a = 0
-    for r in integral:
-        dx = xpco1[z + 1] - xpco1[z]
-        p = cpl[z + 1] + cpl[z]
-        a = (.5 * p * dx) + a
+    z0 = 0
+    for r in range(18):
+        coeffs[z] = cn1[z0]
         z = z + 1
-    cnl = a
-    z = 0
-    a = 0
-    for r in integral:
-        dy = ypco1[z + 1] - ypco1[z]
-        p = cpl[z + 1] + cpl[z]
-        a = (.5 * p * dy) + a
+        z0 = z0 + 1
+    z0 = 17
+    for r in range(18):
+        coeffs[z] = cn2[z0]
+        if z0 == 0:
+            coeffs[z] = cn1[0]
         z = z + 1
-    ccl = a
-    cn = cnl - cnu
-    cc = ccu - ccl
-    angle = np.deg2rad(angle)
-    lift_drag.cl = (cn * np.cos(angle)) - (cc * np.sin(angle))
-    lift_drag.cd = (cc * np.cos(angle)) + (cn * np.sin(angle))
-    print('Lift Coefficient: ')
-    print(lift_drag.cl)
-    print('Drag Coefficient: ')
-    print(lift_drag.cd)
-
+        z0 = z0 - 1
+    plt.rcParams.update({'font.size': 14})
+    plt.figure(dpi=100)
+    plt.grid()
+    plt.title(title + ' Degree AOA, Pressure Coefficient vs Percent Chord (X)')
+    plt.xlabel('x/c')
+    plt.ylabel('Pressure Coefficient')
+#    plt.xlim(-.1, 1.1)
+#    plt.ylim(-3.5, .6)
+    plt.plot(xpco, wingpco, color='black')
+    plt.plot(xpco, -wingpco, color='black')
+    plt.plot(xpco3, coeffs, color='orange')
+    plt.show()
+    plt.rcParams.update({'font.size': 14})
+    plt.figure(dpi=100)
+    plt.grid()
+    plt.title(title + ' Degree AOA, Pressure Coefficient vs Percent Chord (Y)')
+    plt.xlabel('Pressure Coefficient')
+    plt.ylabel('y/c')
+#    plt.xlim(-3.5, 1.1)
+#    plt.ylim(-1, 1)
+    plt.plot(xpco, wingpco, color='black')
+    plt.plot(xpco, -wingpco, color='black')
+    plt.plot(coeffs, ypco3, color='green')
+    plt.show()
 
 #    print(cnu)
 #    print(cnl)
@@ -350,5 +355,5 @@ def reynolds():
 # plot1()
 # plot2()
 # plot3()
-# plot4()
-lift_drag()
+plot4()
+# lift_drag()
